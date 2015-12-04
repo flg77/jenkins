@@ -1,0 +1,149 @@
+#!/bin/bash
+# DESCRIPTION
+# Basic Configuration for the Jenkins CLI 
+# Please note that the JAVA Environment has it's own Bash Environment File
+# 
+#--------------------------------------------------------------------------------------------------------------------------------
+# CONFIGURATION 
+#--------------------------------------------------------------------------------------------------------------------------------
+HOST='localhost'
+SLOT=''
+ENVIRONMENT=''
+SERVERURL='http://localhost:8081/jenkins'
+#--------------------------------------------------------------------------------------------------------------------------------
+# VARIABLES
+#--------------------------------------------------------------------------------------------------------------------------------
+HOME='/home/tomcat'
+
+EXECUTABLE='${HOME}/bin/jenkins-cli.jar'
+
+A=1
+
+JENKINSCMD=(add-job-to-view build,cancel-quiet-down clear-queue connect-node console copy-job create-job create-node create-view delete-builds delete-job delete-node delete-view disable-job disconnect-node enable-job get-gradle get-job get-node get-view groovy groovysh help install-plugin install-tool keep-build list-changes list-jobs list-plugins login logout mail offline-node online-node quiet-down reload-configuration reload-job remove-job-from-view restart safe-restart safe-shutdown session-id set-build-description set-build-display-name set-build-parameter set-build-result set-external-build-result shutdown update-job update-node update-view version wait-node-offline wait-node-online who-am-i)
+
+export PATH=${PATH}:$TOMHOME/bin
+
+CMD=$1 
+
+
+function jenkinshelp(){
+
+printf %s "\
+---------------------------------------------------------------------------------------------------------------------------------
+jenkins-cli usage:
+---------------------------------------------------------------------------------------------------------------------------------
+This wraps the jenkins-cli command into the shorthand version [jenkinscmd <cmd>]
+
+In case your command given fails for incorrectness you'll be redirected to this help page. [Also available via jenkinshelp] 
+Type q to escape and retry. 
+
+Find a list of available STD Commands below:
+---------------------------------------------------------------------------------------------------------------------------------
+| No |Command 				| 	Description									|
+--------------------------------------------------------------------------------------------------------------------------------- 
+| 1  |add-job-to-view			|   	Adds jobs to view.								| 
+| 2  |build				| 	Builds a job, and optionally waits until its completion.			| 
+| 3  |cancel-quiet-down			| 	Cancel the effect of the "quiet-down" command.					| 
+| 4  |clear-queue			| 	Clears the build queue.								| 
+| 5  |connect-node			| 	Reconnect to a node.								| 
+| 6  |console				| 	Retrieves console output of a build.						| 
+| 7  |copy-job				|  	Copies a job.									| 
+| 8  |create-job			|  	Creates a new job by reading stdin as a configuration XML file.			| 
+| 9  |create-node			| 	Creates a new node by reading stdin as a XML configuration.			| 	
+| 10 |create-view			| 	Creates a new view by reading stdin as a XML configuration.			| 
+| 11 |delete-builds			| 	Deletes build record(s).							| 
+| 12 |delete-job			| 	Deletes a job.									| 
+| 13 |delete-node			| 	Deletes a node.									| 
+| 14 |delete-view			|  	Deletes view.									| 
+| 15 |disable-job			| 	Disables a job.									| 
+| 16 |disconnect-node			| 	Disconnects from a node.							| 
+| 17 |enable-job			| 	Enables a job.									| 
+| 18 |get-gradle			| 	List available gradle installations						| 
+| 19 |get-job				| 	Dumps the job definition XML to stdout.						| 
+| 20 |get-node				| 	Dumps the node definition XML to stdout.					| 
+| 21 |get-view				| 	Dumps the view definition XML to stdout.					| 
+| 22 |groovy				| 	Executes the specified Groovy script.						| 
+| 23 |groovysh				| 	Runs an interactive groovy shell.						| 
+| 24 |help				| 	Lists all the available commands or a detailed description of single command.	| 
+| 25 |install-plugin			| 	Installs a plugin either from a file, an URL, or from update center.		| 
+| 26 |install-tool			| 	Performs automatic tool installation, and print its location to stdout. Can be  | 
+|    | 					| 	only called from inside a build.						| 
+| 27 |keep-build			| 	Mark the build to keep the build forever.					| 
+| 28 |list-changes			| 	Dumps the changelog for the specified build(s).					| 
+| 29 |list-jobs				| 	Lists all jobs in a specific view or item group.				| 
+| 30 |list-plugins			| 	Outputs a list of installed plugins.						| 
+| 31 |login				| 	Saves the current credential to allow future commands to run without explicit 	| 
+|    | 					| 	credential information.								| 
+| 32 |logout				| 	Deletes the credential stored with the login command.				| 
+| 33 |mail				| 	Reads stdin and sends that out as an e-mail.					| 
+| 34 |offline-node			| 	Stop using a node for performing builds temporarily, until the next "online-node"|  
+|    | 					| 	command.									| 
+| 35 |online-node			| 	Resume using a node for performing builds, to cancel out the earlier 		| 
+|    | 					| 	"offline-node" command.								| 
+| 36 |quiet-down			| 	Quiet down Jenkins, in preparation for a restart. Don’t start any builds.	| 
+| 37 |reload-configuration		| 	Discard all the loaded data in memory and reload everything from file system.   | 
+|    | 					| 	Useful when you modified config files directly on disk.				| 
+| 38 |reload-job			| 	Reloads this job from disk.							| 
+| 39 |remove-job-from-view		| 	Removes jobs from view.								| 
+| 40 |restart				| 	Restart Jenkins.								| 
+| 41 |safe-restart			| 	Safely restart Jenkins.								| 	
+| 42 |safe-shutdown			| 	Puts Jenkins into the quiet mode, wait for existing builds to be completed,	|  
+|    | 					| 	and then shut down Jenkins.							| 
+| 43 |session-id			| 	Outputs the session ID, which changes every time Jenkins restarts.		| 
+| 44 |set-build-description		| 	Sets the description of a build.						| 
+| 45 |set-build-display-name		| 	Sets the displayName of a build.						| 
+| 46 |set-build-parameter		|	Update/set the build parameter of the current build in progress.		| 
+| 47 |set-build-result			| 	Sets the result of the current build. Works only if invoked from within a build.| 
+| 48 |set-external-build-result		| 	Set external monitor job result.						| 
+| 49 |shutdown				|	Immediately shuts down Jenkins server.						| 
+| 50 |update-job			|	Updates the job definition XML from stdin. The opposite of the get-job command. | 
+| 51 |update-node			| 	Updates the node definition XML from stdin. The opposite of the get-node 	| 
+|    | 					| 	command.									| 
+| 52 |update-view			| 	Updates the view definition XML from stdin. The opposite of the get-view 	| 
+|    | 					| 	command.									| 
+| 53 |version				| 	Outputs the current version.							| 
+| 54 |wait-node-offline			| 	Wait for a node to become offline.						| 
+| 55 |wait-node-online 			| 	Wait for a node to become online.						| 
+| 56 |who-am-i				|	Reports your credential and permissions.					| 
+---------------------------------------------------------------------------------------------------------------------------------
+"| less -r
+}
+
+function validate(){
+		for i in ${JENKINSCMD[@]}
+	  	do
+			if [[ "$i" == "${CMD}" ]]; then
+			echo "Command valid"
+    		else 
+			echo "Command invalid"
+		fi
+	done
+}
+
+function validate1(){
+	if [[ "${JENKINSCMD[@]}" =~ "$#" || "${JENKINSCMD[${#JENKINSCMD[@]}-1]}" == ${CMD} ]]; then
+   		 # whatever you want to do when arr contains value
+		printf %s "$CMD exists in the array of available commands"
+	else
+    		# whatever you want to do when arr doesn't contain value
+		printf %s "$CMD does not exist in the array of available commands"
+	fi
+}
+
+function validate2() {
+	  
+	search_string=$CMD  
+	match=$(echo "${JENKINSCMD[@]:0}" | grep $search_string)  
+	[[ ! -z $match ]] && echo "found !" 
+}
+
+function jenkinscmd() {
+if [ "$#" -eq "${A}" ] ; then
+	if [ "$#" -eq "${CMD}" ] && [ validate -eq "1" ]; then 
+		java -jar jenkins-cli.jar ${SERVER} ${CMD}
+		fi
+	else 
+	jenkinshelp
+fi
+
+}
